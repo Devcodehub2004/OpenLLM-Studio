@@ -1,4 +1,4 @@
-# OpenLLM Studio — Phase 5
+# OpenLLM Studio
 
 A free, local Windows chat workspace using FastAPI, Streamlit, Ollama, and SQLite.
 The existing `GET /` health response and `POST /chat` → `{"reply": "..."}` behavior
@@ -57,15 +57,30 @@ bindings on loopback. No activation command or PowerShell execution-policy chang
 
 ## Dashboard
 
-- Start a new chat, search saved titles, and reopen earlier conversations.
-- Stream responses live; select any installed Ollama model, including mid-conversation.
-- Adjust creativity and memory from 0–50 previous complete turns (default 10).
-- Export the selected chat to JSON. Delete only after selecting the confirmation checkbox.
+- A Copilot-inspired workspace with a light Segoe interface, blue/violet accents,
+  a navigation sidebar, a central composer, and responsive work cards.
+- **Chat:** start fresh or resume one of your five most recent conversations from
+  the sidebar. Responses stream live and completed turns are saved automatically.
+- **Prompt library:** browse eight starters across Plan, Write, Analyze, and Code.
+  Choose **Use prompt** to open an editable draft in a new chat. Replace bracketed
+  details and send when ready; choosing a prompt does not call the model.
+- **Conversation history:** search all saved titles, reopen conversations, and delete
+  chats after an explicit **Delete permanently** confirmation. **Keep conversation** cancels.
+- **Model & preferences:** choose an installed Ollama model, adjust creativity, and set
+  memory from 0–50 previous complete turns (default 10). Preferences persist while
+  navigating within the current session, including when starting another chat.
+- **Export chat:** download the open conversation as Markdown or JSON.
 - See backend/model failures, disabled input when models are unavailable, and partial-reply warnings.
-- Uses labeled native Streamlit controls, semantic headings and chat containers, keyboard
-  navigation, native theme contrast, and text alongside status indicators. No hidden labels,
-  unsafe HTML, or custom CSS that suppresses focus indicators. Formal screen-reader
-  testing has not been performed.
+- Uses native Streamlit controls, visible keyboard focus, text alongside status indicators,
+  local decorative SVGs, reduced-motion support, and a default light theme in
+  `.streamlit/config.toml`. Presentation markup is app-authored; conversation content
+  is rendered through Streamlit Markdown without enabling HTML. Formal screen-reader
+  and live browser visual testing have not been completed.
+
+Restart Streamlit after updating dependencies or theme configuration. For Docker,
+run `docker compose up --build`; the frontend image includes both the stylesheet
+and theme configuration. This workspace uses the existing local Ollama backend;
+the prompt cards guide chat workflows and do not execute code or connect to Microsoft 365.
 
 ## Memory and persistence
 

@@ -1,4 +1,5 @@
 """Local FastAPI service, Ollama streaming, and durable conversation memory."""
+from backend.context import MessageTooLong, trim_history
 import json
 import os
 import sqlite3
@@ -121,11 +122,29 @@ async def prepare(body):
     if identifier in app.state.busy:
         raise HTTPException(409, 'This conversation is already generating a reply.')
     app.state.busy.add(identifier)
-    history = conversation['messages'][-2 * body.memory_turns:] if body.memory_turns else []
-    messages = [{'role': m['role'], 'content': m['content']} for m in history]
-    messages.append({'role': 'user', 'content': body.message})
-    return identifier, {'model': body.model, 'messages': messages,
-                        'options': {'temperature': body.temperature}}
+    
+    history = (
+        conversation["messages"][-2 * body.memory_turns:]
+        if body.memory_turns
+        else []
+    )
+
+    try:
+        messages = trim_history(history, body.message)
+    except MessageTooLong as exc:
+        app.state.busy.discard(identifier)
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    return identifier, {
+        "model": body.model,
+        "messages": messages,
+        "options": {
+            "temperature": body.temperature,
+            "num_ctx": 4096,
+            "num_predict": 1024,
+        },
+    }
+
 
 
 def event(kind, **data):

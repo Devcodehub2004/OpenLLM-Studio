@@ -5,8 +5,11 @@
 __pycache__/
 *.pyc
 .pytest_cache/
+.test-tmp/
+.ui-qa/
 data/
 models/
 backups/
 *.gguf
 .streamlit/secrets.toml
+snapshots/*.png
