@@ -4,15 +4,44 @@ A free, local Windows chat workspace using FastAPI, Streamlit, Ollama, and SQLit
 The existing `GET /` health response and `POST /chat` → `{"reply": "..."}` behavior
 remain available. The dashboard now uses a separate streaming endpoint.
 
+## Project snapshot for recruiters
+
+**What it solves:** A private, local LLM chat workspace that runs without cloud API keys.
+
+**How it works:** A Streamlit interface calls a FastAPI backend, which sends prompts to locally installed Ollama models (including Qwen2.5 1.5B). SQLite saves conversations so they survive application restarts.
+
+**Implemented engineering work**
+- Streaming chat responses via an NDJSON endpoint, with explicit success/error events
+- Persistent and searchable conversation history, model switching and JSON/Markdown export
+- Per-conversation generation safeguards and validation for unavailable models
+- Local deployment using Docker Compose, plus automated API and dashboard tests
+
+**Verification:** [VALIDATION.md](VALIDATION.md) records **30 passing pytest tests** and passing Ruff checks on **3 November 2026**. The automated suite **mocks Ollama**; those results do not establish live model accuracy, throughput, or production readiness.
+
+**Architecture**
+
+```mermaid
+flowchart LR
+    U[Streamlit dashboard] --> A[FastAPI service]
+    A --> O[Ollama - local model inference]
+    A <--> D[(SQLite - chat history)]
+```
+
+**Trade-offs:** This is a local portfolio application, not a public multi-user service. It lacks user authentication; run on loopback as instructed below. Model quality depends on the locally installed model and available hardware.
+
+**Explore:** [Setup](#windows-quick-start-powershell) · [API](#api) · [Tests](#validation-and-tests)
+
+---
+
 ## Windows quick start (PowerShell)
 
-Run these commands from the existing project folder. Python **3.12** is recommended;
+Replace the example `C:\\path\\to\\OpenLLM-Studio` with your local checkout folder in the commands below. Python **3.12** is recommended;
 the project's existing environment was verified as 3.12.7. Do not recreate a working
 environment just to run this update. Python 3.15 can lack dependency wheels, causing
 source-build errors such as the earlier PyYAML failure.
 
 ```powershell
-Set-Location C:\Users\91907\OpenLLM-Studio
+Set-Location C:\path\to\OpenLLM-Studio
 # Only if .venv does not already exist:
 py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
@@ -39,14 +68,14 @@ ollama pull qwen2.5:1.5b
 Start the backend in one PowerShell window:
 
 ```powershell
-Set-Location C:\Users\91907\OpenLLM-Studio
+Set-Location C:\path\to\OpenLLM-Studio
 .\.venv\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 ```
 
 Start the dashboard in another:
 
 ```powershell
-Set-Location C:\Users\91907\OpenLLM-Studio
+Set-Location C:\path\to\OpenLLM-Studio
 .\.venv\Scripts\python.exe -m streamlit run frontend\app.py --server.address 127.0.0.1 --server.port 8501
 ```
 
@@ -137,7 +166,7 @@ Optional environment variables, set **before** starting the corresponding servic
 ```powershell
 # Backend only; defaults shown
 $env:OLLAMA_BASE_URL = 'http://127.0.0.1:11434'
-$env:OPENLLM_DB_PATH = 'C:\Users\91907\OpenLLM-Studio\data\chat.db'
+$env:OPENLLM_DB_PATH = 'C:\path\to\OpenLLM-Studio\data\chat.db'
 # Dashboard only
 $env:OPENLLM_API_URL = 'http://127.0.0.1:8000'
 ```
@@ -151,7 +180,7 @@ Uvicorn's `standard` extras were removed to avoid unnecessary native/optional bu
 ## Validation and tests
 
 ```powershell
-Set-Location C:\Users\91907\OpenLLM-Studio
+Set-Location C:\path\to\OpenLLM-Studio
 .\.venv\Scripts\python.exe -m pytest -q
 .\.venv\Scripts\python.exe -m ruff check backend frontend tests
 ```
