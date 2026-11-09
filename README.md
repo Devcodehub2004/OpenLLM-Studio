@@ -33,6 +33,9 @@ flowchart LR
 
 ---
 
+
+**Demo walkthrough:** [60-second demo script and screenshot checklist](docs/DEMO_GUIDE.md). No public demo video or app screenshots are claimed until actual captures are added.
+
 ## Windows quick start (PowerShell)
 
 Replace the example `C:\\path\\to\\OpenLLM-Studio` with your local checkout folder in the commands below. Python **3.12** is recommended;
