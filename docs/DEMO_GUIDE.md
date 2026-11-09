@@ -2,6 +2,16 @@
 
 > **Status:** This is a capture plan, not a hosted demo or proof of a fresh live test. Capture screenshots from a locally running instance before adding any images to the README.
 
+## Read-only readiness check (Windows)
+
+After starting Ollama, FastAPI and Streamlit, from the repository root run:
+
+```powershell
+.\scripts\check_demo.ps1
+```
+
+The script checks only local Ollama, FastAPI and Streamlit endpoints. It does **not** send prompts, change chat history or capture images. A successful result confirms services respond, **not** that chat generation, persistence, or UI interactions have been tested. If Windows blocks local scripts, you can manually visit `http://127.0.0.1:8000/`, `http://127.0.0.1:8000/models`, and `http://127.0.0.1:8501` instead; do not relax execution policies just for a demo.
+
 ## Objective (60 seconds)
 
 Show that this is more than a chatbot UI: it has local model inference, streaming, persisted chats, model switching and backend tests.
